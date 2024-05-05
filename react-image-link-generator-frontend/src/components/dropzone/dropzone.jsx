@@ -9,9 +9,11 @@ export default function MyDropzone() {
   const [fileNumber, setFileNumber] = useState(0);
   const [fileUploading, setFileUploading] = useState(false);
   const apiKey = import.meta.env.VITE_IMAGE_HOST_API_KEY;
+  const serverURL = import.meta.env.VITE_SERVER_URL;
 
   const onDrop = useCallback(
     (files) => {
+      let urls = [];
       const uploadFile = async (key) => {
         try {
           for (let i = 0; i < files.length; i++) {
@@ -33,9 +35,42 @@ export default function MyDropzone() {
                 },
               }
             );
-            setFileUploading(false);
+            setFileUploading(false); // Set file uploading to false
             const imageURL = await res.data?.data?.display_url;
-            console.log(imageURL);
+            urls.push(imageURL);
+          }
+          if (urls.length === files.length) {
+            axios
+              .post(`${serverURL}/upload-photo-url`, urls)
+              .then((res) => {
+                res &&
+                  toast.success("Image Upload successful.", {
+                    description: Date.now(),
+                    action: {
+                      label: "Try again",
+                      onClick: () => console.log("Undo"),
+                    },
+                  });
+                console.log(res.data?.insertedId);
+              })
+              .catch((err) => {
+                err &&
+                  toast.error("An error occurred while uploading the image.", {
+                    description: Date.now(),
+                    action: {
+                      label: "Try again",
+                      onClick: () => console.log("Undo"),
+                    },
+                  });
+              });
+          } else {
+            toast.error("An error occurred while uploading the image.", {
+              description: Date.now(),
+              action: {
+                label: "Try again",
+                onClick: () => console.log("Undo"),
+              },
+            });
           }
         } catch (error) {
           toast.error("An error occurred while uploading the image.", {
@@ -51,7 +86,7 @@ export default function MyDropzone() {
       //   Using callback function
       uploadFile(apiKey);
     },
-    [apiKey]
+    [apiKey, serverURL]
   );
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
