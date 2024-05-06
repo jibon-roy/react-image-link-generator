@@ -56,7 +56,8 @@ export default function MyDropzone() {
                 await axios
                   .get(`${serverURL}/upload-photos?id=${getImageUploadId}`)
                   .then((result) => {
-                    setImageArray(result?.data?.images);
+                    const urls = result?.data?.images;
+                    setImageArray(urls);
                     console.log(result?.data?.images);
                   });
               })
