@@ -48,7 +48,7 @@ export default function MyDropzone() {
                   toast.success("Image Upload successful.", {
                     description: Date.now(),
                     action: {
-                      label: "Try again",
+                      label: "Grate!",
                       onClick: () => console.log("Undo"),
                     },
                   });
@@ -97,7 +97,7 @@ export default function MyDropzone() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <section className="md:flex p-4 flex-row-reverse justify-around items-center">
+    <section className="container overflow-auto mx-auto md:flex p-4 flex-row-reverse justify-around items-center">
       <div
         className="flex justify-center my-10 items-center text-2xl"
         {...getRootProps()}
@@ -110,10 +110,10 @@ export default function MyDropzone() {
               <div className="w-full h-screen text-gray-100 font-extrabold text-4xl absolute flex justify-center items-center top-0 left-0 bg-black/70">
                 Drag files here
               </div>
-              <div className="border-[8px] border-r-0 border-b-0 border-gray-100 rounded-tl-md absolute top-10 left-10 w-28 h-28"></div>
-              <div className="border-[8px] border-l-0 border-b-0 border-gray-100 rounded-md absolute top-10 right-10 w-28 h-28"></div>
-              <div className="border-[8px] border-r-0 border-t-0 border-gray-100 rounded-md absolute bottom-10 left-10 w-28 h-28"></div>
-              <div className="border-[8px] border-t-0 border-l-0 border-gray-100 rounded-md absolute bottom-10 right-10 w-28 h-28"></div>
+              <div className="border-[8px] border-r-0 border-b-0 border-gray-100 rounded-md absolute top-10 left-10 w-10 h-10 lg:w-28 lg:h-28"></div>
+              <div className="border-[8px] border-l-0 border-b-0 border-gray-100 rounded-md absolute top-10 right-10 w-10 h-10 lg:w-28 lg:h-28"></div>
+              <div className="border-[8px] border-r-0 border-t-0 border-gray-100 rounded-md absolute bottom-10 left-10 w-10 h-10 lg:w-28 lg:h-28"></div>
+              <div className="border-[8px] border-t-0 border-l-0 border-gray-100 rounded-md absolute bottom-10 right-10 w-10 h-10 lg:w-28 lg:h-28"></div>
               <div className="flex items-center font-extrabold text-white rounded-full text-center shadow-md bg-blue-500 px-8 py-4">
                 Drag here
               </div>
@@ -133,19 +133,27 @@ export default function MyDropzone() {
           }
         >
           <div className="text-2xl font-semibold">
-            file {fileNumber} Uploaded {progressLoad} %
+            File {fileNumber} Uploaded {progressLoad} %
           </div>
         </div>
         <Toaster position="top-right" />
       </div>
       <div
         className={`text-4xl p-10 font-extrabold text-gray-400 ${
-          imageArray.length > 0 && "grid gap-4 md:grid-cols-3"
+          imageArray.length > 0
+            ? "grid gap-4 md:grid-cols-2 xl:grid-cols-3"
+            : "flex justify-center items-center"
         }`}
       >
         {imageArray.length === 0
           ? "Upload image to view"
-          : imageArray.map((img, key) => <img key={key} src={img}></img>)}
+          : imageArray.map((img, key) => (
+              <img
+                className="hover:brightness-75 transition"
+                key={key}
+                src={img}
+              ></img>
+            ))}
       </div>
     </section>
   );
