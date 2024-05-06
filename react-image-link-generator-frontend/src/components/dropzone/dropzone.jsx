@@ -49,7 +49,7 @@ export default function MyDropzone() {
                     description: Date.now(),
                     action: {
                       label: "Grate!",
-                      onClick: () => console.log("Undo"),
+                      onClick: () => console.log("Notification clicked"),
                     },
                   });
                 const getImageUploadId = res.data?.insertedId;
