@@ -14,6 +14,7 @@ app.use(
 );
 
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5969vqf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 const client = new MongoClient(uri, {
@@ -33,6 +34,13 @@ async function run() {
     app.post("/upload-photo-url", async (req, res) => {
       const data = { images: req.body };
       const result = await PhotosCollection.insertOne(data);
+      res.status(200).send(result);
+    });
+
+    app.get("/upload-photos", async (req, res) => {
+      const id = req.query.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await PhotosCollection.findOne(query);
       res.status(200).send(result);
     });
 

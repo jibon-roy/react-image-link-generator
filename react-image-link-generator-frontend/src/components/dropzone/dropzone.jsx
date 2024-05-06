@@ -8,6 +8,7 @@ export default function MyDropzone() {
   const [progressLoad, setProgressLoad] = useState(0);
   const [fileNumber, setFileNumber] = useState(0);
   const [fileUploading, setFileUploading] = useState(false);
+  const [imageArray, setImageArray] = useState([]);
   const apiKey = import.meta.env.VITE_IMAGE_HOST_API_KEY;
   const serverURL = import.meta.env.VITE_SERVER_URL;
 
@@ -40,9 +41,9 @@ export default function MyDropzone() {
             urls.push(imageURL);
           }
           if (urls.length === files.length) {
-            axios
+            await axios
               .post(`${serverURL}/upload-photo-url`, urls)
-              .then((res) => {
+              .then(async (res) => {
                 res &&
                   toast.success("Image Upload successful.", {
                     description: Date.now(),
@@ -51,7 +52,12 @@ export default function MyDropzone() {
                       onClick: () => console.log("Undo"),
                     },
                   });
-                console.log(res.data?.insertedId);
+                const getImageUploadId = res.data?.insertedId;
+                await axios
+                  .get(`${serverURL}/upload-photos?id=${getImageUploadId}`)
+                  .then((result) => {
+                    setImageArray(result?.data?.images);
+                  });
               })
               .catch((err) => {
                 err &&
@@ -91,42 +97,56 @@ export default function MyDropzone() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
-    <div
-      className="w-full h-screen cursor-pointer flex justify-center items-center text-2xl"
-      {...getRootProps()}
-    >
-      <input {...getInputProps()} />
-      <div className="w-screen h-screen flex justify-center items-center absolute top-0 left-0 bg-gray-200 bg-opacity-50 z-50">
-        {isDragActive ? (
-          <div className="w-full h-full flex justify-center items-center">
-            {/* <div className="border border-gray-400 rounded-md absolute top-0 left-0 right-0 bottom-0 mx-4 my-4"></div> */}
-            <div className="border-[8px] border-r-0 border-b-0 border-gray-400 rounded-md absolute top-10 left-10 w-28 h-28"></div>
-            <div className="border-[8px] border-l-0 border-b-0 border-gray-400 rounded-md absolute top-10 right-10 w-28 h-28"></div>
-            <div className="border-[8px] border-r-0 border-t-0 border-gray-400 rounded-md absolute bottom-10 left-10 w-28 h-28"></div>
-            <div className="border-[8px] border-t-0 border-l-0 border-gray-400 rounded-md absolute bottom-10 right-10 w-28 h-28"></div>
-            <div className="bg-white h-36 px-4 flex items-center rounded-lg shadow-lg">
-              <p className="text-center">Drag files here.</p>
+    <section className="md:flex p-4 flex-row-reverse justify-around items-center">
+      <div
+        className="flex justify-center my-10 items-center text-2xl"
+        {...getRootProps()}
+      >
+        <input {...getInputProps()} />
+        <div className="flex w-60 h-60 md:w-80 md:h-80 rounded-3xl shadow-lg justify-center items-center cursor-pointer bg-white">
+          {isDragActive ? (
+            <div className="w-full h-full flex justify-center items-center">
+              {/* <div className="border border-gray-400 rounded-md absolute top-0 left-0 right-0 bottom-0 mx-4 my-4"></div> */}
+              <div className="w-full h-screen text-gray-100 font-extrabold text-4xl absolute flex justify-center items-center top-0 left-0 bg-black/70">
+                Drag files here
+              </div>
+              <div className="border-[8px] border-r-0 border-b-0 border-gray-100 rounded-tl-md absolute top-10 left-10 w-28 h-28"></div>
+              <div className="border-[8px] border-l-0 border-b-0 border-gray-100 rounded-md absolute top-10 right-10 w-28 h-28"></div>
+              <div className="border-[8px] border-r-0 border-t-0 border-gray-100 rounded-md absolute bottom-10 left-10 w-28 h-28"></div>
+              <div className="border-[8px] border-t-0 border-l-0 border-gray-100 rounded-md absolute bottom-10 right-10 w-28 h-28"></div>
+              <div className="flex items-center font-extrabold text-white rounded-full text-center shadow-md bg-blue-500 px-8 py-4">
+                Drag here
+              </div>
             </div>
+          ) : (
+            // <p>Drag drop some files here, or click to select files</p>
+            <div className="flex items-center font-extrabold text-white rounded-full text-center shadow-md bg-blue-500 px-8 py-4">
+              Upload files
+            </div>
+          )}
+        </div>
+        <div
+          className={
+            !fileUploading
+              ? "hidden fixed"
+              : "flex text-white justify-center items-center top-0 left-0 fixed w-full min-h-screen bg-black/70 "
+          }
+        >
+          <div className="text-2xl font-semibold">
+            file {fileNumber} Uploaded {progressLoad} %
           </div>
-        ) : (
-          // <p>Drag drop some files here, or click to select files</p>
-          <div className="bg-white h-36 px-4 flex items-center rounded-lg shadow-lg">
-            <p className="text-center">Click to drag or drop files here.</p>
-          </div>
-        )}
+        </div>
+        <Toaster position="top-right" />
       </div>
       <div
-        className={
-          !fileUploading
-            ? "hidden fixed"
-            : "flex z-50 text-white justify-center items-center top-0 left-0 fixed w-full min-h-screen bg-black/70 "
-        }
+        className={`text-4xl p-10 font-extrabold text-gray-400 ${
+          imageArray.length > 0 && "grid gap-4 md:grid-cols-3"
+        }`}
       >
-        <div className="text-2xl font-semibold">
-          file {fileNumber} Uploaded {progressLoad} %
-        </div>
+        {imageArray.length === 0
+          ? "Upload image to view"
+          : imageArray.map((img, key) => <img key={key} src={img}></img>)}
       </div>
-      <Toaster position="top-right" />
-    </div>
+    </section>
   );
 }
