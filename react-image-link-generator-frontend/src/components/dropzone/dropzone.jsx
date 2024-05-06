@@ -67,7 +67,7 @@ export default function MyDropzone() {
                     description: Date.now(),
                     action: {
                       label: "Try again",
-                      onClick: () => console.log("Undo"),
+                      onClick: () => console.log("Notification clicked"),
                     },
                   });
               });
