@@ -57,6 +57,7 @@ export default function MyDropzone() {
                   .get(`${serverURL}/upload-photos?id=${getImageUploadId}`)
                   .then((result) => {
                     setImageArray(result?.data?.images);
+                    console.log(result?.data?.images);
                   });
               })
               .catch((err) => {
