@@ -12,7 +12,7 @@ app.use(
     origin: "*",
   })
 );
-
+// importing mongodb
 const { MongoClient, ServerApiVersion } = require("mongodb");
 const { ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5969vqf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
