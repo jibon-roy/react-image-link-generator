@@ -58,7 +58,7 @@ export default function MyDropzone() {
                   .then((result) => {
                     const urls = result?.data?.images;
                     setImageArray(urls);
-                    console.log(result?.data?.images);
+                    console.log(urls);
                   });
               })
               .catch((err) => {
